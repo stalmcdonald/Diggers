@@ -211,12 +211,10 @@ public class TideActivity extends Activity {  // sdubin, removed the implements 
        	protected void onPostExecute(String result){
        		Log.i("JSON RESULTS", result);
        		
-       		//sdubin -> Take the JSON data in the result String and update your UI.
-       		//  Comment out your writing the file code for now, you will need it later
-       		//      but I want to get your JSON parsing and display done first.
-       		// sdubin, end comment
-       		       		
-       		//was planning to wrap this in a function but can't seem to get it to work.
+       		
+       		
+       		//REVISITED THIS CODE TO TRY AND FIGURE THIS OUT BUT MY APP CRASHES.  
+       		
 //       		try{
 //       		JSONObject json = JSONObject(result);
 //       		JSONObject tObject = json.getJSONObject("tide");
@@ -255,13 +253,23 @@ public class TideActivity extends Activity {  // sdubin, removed the implements 
 //       	}	
 //    	}
        		
+       	//TRYING TO PARSE THE JSON DATA HERE.  
+       		//CANNOT SEEM TO FIGURE OUT THE ARRAY/OBJECT SITUATION.  
+       		//I AM TRYING TO TARGET THE OBJECT TIDE AND THE ARRAY TIDEINFO 
+       		//TO GET THE OJBECTS/STRINGS TIDESITE..THEN GO TO THE OBJECT TIDESUMMARY 
+       		//TO GRAB THE DATE(PRETTY) AND THE OBJECT DATA FOR THE TIDE HEIGHT AND SWELL.
+       		
        		try{
        			//parsing through JSON Data accepts a string as a parameter
-       			JSONObject json = new JSONObject("tide");
-       				JSONObject results = json.getJSONObject("tideInfo").getJSONObject("tideSummary");
-       			if(results.getString("tide").compareTo("tideSite")==1){
+       			JSONObject json = new JSONObject("tide");//value tide be converted to JSONObject
+       				JSONObject results = json.getJSONObject("utcdate").getJSONObject("data");
+       			if(results.getString("type") != null){
        				Toast toast = Toast.makeText(_context, "Invalid City Entered ", Toast.LENGTH_LONG);
        				toast.show();
+//       				String type;
+//					tvCity.setText("In " + c + " The tide prediction:" + type);
+//                  tvPrediction.setText( p + " tide prediction:"+ results);
+//                  tvWater.setText(w + ": Puget Sound");
        			}else{
        				Toast toast = Toast.makeText(_context, "Tide Info" + results.get("pretty"), Toast.LENGTH_LONG);
        				toast.show();
