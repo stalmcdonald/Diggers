@@ -78,14 +78,6 @@ public class WebFile {
 					responseBuffer.append(response);
 					
 				}
-				
-				//sdubin adding some code
-			/*	URI[] uri = new URI[1];	
-				try {
-					uri[0] = new URI(uri.toString());
-				} catch (URISyntaxException e) {
-					e.printStackTrace();
-				}*/
 								
 	    		// Verify we got a JSON String
 	    		JSONObject json = null;

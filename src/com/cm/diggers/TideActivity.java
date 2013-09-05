@@ -11,6 +11,7 @@ package com.cm.diggers;
 import com.cm.diggers.R;
 import com.cm.diggers.R.string;
 import com.cm.diggers.DataFile;
+import com.cm.diggers.Service;
 
 
 import java.net.MalformedURLException;
@@ -22,9 +23,13 @@ import android.util.Log;
 
 import android.os.Bundle;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -108,6 +113,37 @@ public class TideActivity extends Activity {  // sdubin, removed the implements 
 	        		   String tempUrl = "";
 	        		   tempUrl = new String(baseURL + c + ".json");
                        // sdubin, end changes/additions
+	        		    
+	        		   Handler myDataHandler = new Handler() {
+                            public void handleMessage (Message msg) {
+                            	
+                                    Log.i("SERVICES", "handleMessage");
+                                    String response = null;
+                                   //validate contents of the message, check the object as well to send data back
+                                    if (msg.arg1 == RESULT_OK && msg.obj != null) {//arg1 used for status info
+                                            try {
+                                                    response = (String) msg.obj;
+                                                    Log.i("JSON response", response);
+                                                   
+                                                    //displayData();                                                               
+
+                                            } catch (Exception e) {
+                                                    Log.e("JSON RESPONSE", e.getMessage().toString());
+                                            } 
+                                            //resultText.setText(response);
+                                            //changes the color of text
+                                            //resultText.setTextColor(getResources().getColor(R.color.orange));
+                                    }
+
+                            }
+                           
+                    };
+	        		   //implementing messenger and intent
+	        		   Messenger dataMessenger = new Messenger(myDataHandler);
+	        		   Intent startDataServiceIntent = new Intent(getBaseContext(),Service.class);
+	        		   startDataServiceIntent.putExtra("messenger", dataMessenger);
+	        		   startDataServiceIntent.putExtra(c, tempUrl);
+	        		   startService(startDataServiceIntent);
                        
                        URL finalURL;                       
                        try{
@@ -261,7 +297,7 @@ public class TideActivity extends Activity {  // sdubin, removed the implements 
        		
        		try{
        			//parsing through JSON Data accepts a string as a parameter
-       			JSONObject json = new JSONObject("tide");//value tide be converted to JSONObject
+       			JSONObject json = new JSONObject("tide");
        				JSONObject results = json.getJSONObject("utcdate").getJSONObject("data");
        			if(results.getString("type") != null){
        				Toast toast = Toast.makeText(_context, "Invalid City Entered ", Toast.LENGTH_LONG);
