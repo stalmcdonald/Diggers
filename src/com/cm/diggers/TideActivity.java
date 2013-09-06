@@ -4,7 +4,7 @@
  * Java II
  * 1309
  * Week 1
- * 
+ * (Working with the help of S.Dubin, Course Instructor FSU)
  */
 package com.cm.diggers;
 
@@ -46,9 +46,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class TideActivity extends Activity {  // sdubin, removed the implements onClickListener,
-	                                          //  it could be done this way but it is easier to 
-	                                          //  define within the onCreate method
+public class TideActivity extends Activity { 
 	
 	//Create my custom API URL
 	//pulling city tide prediction from the wunderground api
@@ -63,7 +61,7 @@ public class TideActivity extends Activity {  // sdubin, removed the implements 
 	 //JSONObject results, type, tide, tideInfo;
 	 HashMap<String, String> _history;
 	 Boolean _connected = false;//want to assume not connected
-	 private Button b;  //sdubin made button a global class member
+	 private Button b;  //global button
 	 
 	  /** Called when the activity is first created. */
 	        @Override
@@ -130,9 +128,7 @@ public class TideActivity extends Activity {  // sdubin, removed the implements 
                                             } catch (Exception e) {
                                                     Log.e("JSON RESPONSE", e.getMessage().toString());
                                             } 
-                                            //resultText.setText(response);
-                                            //changes the color of text
-                                            //resultText.setTextColor(getResources().getColor(R.color.orange));
+                                            
                                     }
 
                             }
@@ -150,34 +146,12 @@ public class TideActivity extends Activity {  // sdubin, removed the implements 
 
                     	   //fixed finalURL
                     	   finalURL = new URL(tempUrl);
-                            
-                            // Log.i("my url:", baseURL + c + ".json");
-                            // Log.i("City Entered:", c);
+
                              Log.i("FINAL URL", finalURL.toString());
                              
-                             // sdubin added the call to AsyncTask 
+                             //call to AsyncTask 
                              LocRequest lr = new LocRequest();
-                             lr.execute(finalURL);
-                             // sdubin End new code
-                             
-                             //sdubin notes, remove the commented out code below
-                             // You will update your UI after the call onPostExecute() after it has 
-                             //  finished the doInBackground() method.
-                             
-                             //  tidesite.setText("Tide Location for "+ c +": ");//+ something) not sure how to pull LOCATION data here
-                             //  calendar.setText("Date: " );//+ something) not sure how to pull DATE data here
-                             //  tidepre.setText("Tidal Prediction: " );//+ something)not sure how to pull HIGH/LOW data here
-                             //  waveheight.setText("Swell: " );//+ something) not sure how to pull HEIGHT data here
-
-                               //part of the code from JDonlan videos I couldn't get to work.
-                               //tideRequest tr = new tideRequest();
-//                             tr.execute(finalURL);
-                               
-//                             tvCity.setText("In " + c + " The tide prediction:" + type);
-//                             tvPrediction.setText( p + " tide prediction:"+ results);
-//                             tvWater.setText(w + ": Puget Sound");
-                            
-                             //tvCity.setText(fullURL);
+                            // lr.execute(finalURL);
                            
                             
                      } catch (MalformedURLException e){
@@ -188,7 +162,7 @@ public class TideActivity extends Activity {  // sdubin, removed the implements 
                              tvWater.setText(w + ": Location: UNKOWN");
                              etCity.setText(URL);
                      } finally {
-                             // This you do even if your try block fails
+                             // This is done even if try block fails
                                  Log.i("LOG", "I have hit the finally statement");
                      }
 
@@ -237,63 +211,15 @@ public class TideActivity extends Activity {  // sdubin, removed the implements 
     			Log.e("URL DOB", url.toString());
     			response = WebFile.getURLSTringResponse(url);
     		}
-    		//Log.i("onPostExecute, response=", response);
     		return response;
     	}
     	
-    	//sdubin Moved onPostExecute to inside the LocRequest class, it is a 
+    	//onPostExecute now inside the LocRequest class, it is a 
     	// required interface class for AsyncTask
     	@Override
        	protected void onPostExecute(String result){
        		Log.i("JSON RESULTS", result);
        		
-       		
-       		
-       		//REVISITED THIS CODE TO TRY AND FIGURE THIS OUT BUT MY APP CRASHES.  
-       		
-//       		try{
-//       		JSONObject json = JSONObject(result);
-//       		JSONObject tObject = json.getJSONObject("tide");
-//       		JSONArray tideList = tObject.getJSONArray("tideSummary");
-//       		
-//       				JSONObject TPObj = tideList.getJSONObject(0);
-//       				
-//       				JSONObject predict1 = TPObj.getJSONObject("date");
-//       				String timedata = predict1.getString("pretty");
-//       				Log.i("Date:", timedata.toString());
-//       				
-//       				JSONObject predict2 = TPObj.getJSONObject("data");
-//       				String tidedata = predict2.getString("type");
-//       				String heightdata = predict2.getString("height");
-//       				Log.i("Tide Log:", tidedata.toString() + heightdata.toString());
-//       				
-//       				JSONObject predict3 = TPObj.getJSONObject("tideInfo");
-//       				String citydata = predict3.getString("tideSite");
-//       				Log.i("Tide Log:", citydata.toString());
-//       				
-//       				String city = tideList.getJSONObject(0).getString("tideSite");
-//       				String date = tideList.getJSONObject(0).getString("pretty");
-//       				String tidePrediction = tideList.getJSONObject(0).getString("type");
-//       				String height = tideList.getJSONObject(0).getString("height");
-//       				
-//       				tidesite.setText(city);
-//       				calendar.setText(date);
-//       				tidepre.setText(tidePrediction);
-//       				waveheight.setText(height);
-//       				
-//       				Log.i("Results", city + date + tidePrediction + height);
-//       				
-    //   	
-//       	}catch (JSONException e){
-//    		Log.e("JSON","JSON OBJECT EXCEPTION" + e.toString());
-//       	}	
-//    	}
-       		
-       	//TRYING TO PARSE THE JSON DATA HERE.  
-       		//CANNOT SEEM TO FIGURE OUT THE ARRAY/OBJECT SITUATION.  
-       		//I AM TRYING TO TARGET THE OBJECT TIDE AND THE ARRAY TIDEINFO 
-       		//TO GET THE OJBECTS/STRINGS TIDESITE..THEN GO TO THE OBJECT TIDESUMMARY 
-       		//TO GRAB THE DATE(PRETTY) AND THE OBJECT DATA FOR THE TIDE HEIGHT AND SWELL.
        		
        		try{
        			//parsing through JSON Data accepts a string as a parameter
@@ -337,7 +263,8 @@ public class TideActivity extends Activity {  // sdubin, removed the implements 
         view = view.findViewWithTag(R.id.class);
     }
 
-/* sdubin, commented it out, it is not needed
+/* uncommented for now will need before turn in
+ checking network connection
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
