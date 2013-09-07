@@ -51,16 +51,15 @@ public class Service extends IntentService{
 		
 		//Moved JSON web api call and Storage here, retrieving info to handle service
 		Bundle extras = intent.getExtras();
+		
 		//access to the handler
+		//KEYS
 		messenger = (Messenger)extras.get(MESSENGER_KEY);
 		tidal_city =(String) extras.getString(TIDAL_CITY);
 		url = (String) extras.getString(FINAL_URL);
-		//String arg1 = extras.getString(TIDAL_CITY);
 		
 		//Log.e("TIDE SERVICE", "TIDAL CITY:",tidal_city);
 		
-		//value entered in and return message to main activity
-		//Object message, messenger;
 		
 		//Call JSON web api here
 		try {
@@ -69,7 +68,10 @@ public class Service extends IntentService{
 			
 			//data being stored in file here
 			JSONObject json;
-			Log.i("SERVICE", response);		
+			
+			//log cat displays json data that is held in tideInfo.txt
+			Log.i("SERVICE", response);	
+			
 			try {
 				json = new JSONObject(response);
 				DataFile.storeStringFile(getBaseContext(), "tideInfo.txt", json.toString(), false);
@@ -89,7 +91,7 @@ public class Service extends IntentService{
 		
         try {
             
-            //message.arg1 = Activity.RESULT_OK;
+            message.arg1 = Activity.RESULT_OK;
             message.obj = "Data Service Complete";
             //send message to activity
             //messenger.send(message);//created a field for messenger because it caused an error
