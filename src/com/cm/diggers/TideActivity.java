@@ -107,50 +107,46 @@ public class TideActivity extends Activity {
                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 	        		   imm.hideSoftInputFromWindow(b.getWindowToken(), 0);
 	        		   
-	        		   // sdubin, changed this a little   
+	        		 //Detects the network connection
+	        	  		_connected = WebFile.getConnectionStatus(_context);
+	        	  		if(_connected){
+	        	  			Log.i("NETWORK CONNECTION ", WebFile.getConnnectionType(_context));
+	        	  		}
+	        		
+	        		   
+	        		   //Callback Method
+	        		   Handler myHandler = new Handler(){
+	        			   
+	        			   public void handleMessage(Message msg){
+	        				   super.handleMessage(msg);
+	        				   
+	        				   updateUI();
+	        			   }
+	        		   };
+	        		   
+	        		   	
 	        		   String tempUrl = "";
 	        		   tempUrl = new String(baseURL + c + ".json");
-                       // sdubin, end changes/additions
 	        		    
-	        		   Handler myDataHandler = new Handler() {
-                            public void handleMessage (Message msg) {
-                            	
-                                    Log.i("SERVICES", "handleMessage");
-                                    String response = null;
-                                   //validate contents of the message, check the object as well to send data back
-                                    if (msg.arg1 == RESULT_OK && msg.obj != null) {//arg1 used for status info
-                                            try {
-                                                    response = (String) msg.obj;
-                                                    Log.i("JSON response", response);
-                                                   
-                                                    //displayData();                                                               
-
-                                            } catch (Exception e) {
-                                                    Log.e("JSON RESPONSE", e.getMessage().toString());
-                                            } 
-                                            
-                                    }
-
-                            }
-                           
-                    };
-	        		   //implementing messenger and intent
-	        		   Messenger dataMessenger = new Messenger(myDataHandler);
-	        		   Intent startDataServiceIntent = new Intent(getBaseContext(),Service.class);
-	        		   startDataServiceIntent.putExtra("messenger", dataMessenger);
-	        		   startDataServiceIntent.putExtra(c, tempUrl);
-	        		   startService(startDataServiceIntent);
                        
                        URL finalURL;                       
                        try{
 
                     	   //fixed finalURL
                     	   finalURL = new URL(tempUrl);
+                    	   Log.i("FINAL URL", finalURL.toString());
+                    	   
+                    	   Messenger myMessenger = new Messenger(myHandler);
+                    	   Intent myIntent = new Intent(_context, Service.class);
+                    	   myIntent.putExtra("messenger", myMessenger);
+                    	   myIntent.putExtra("tidal_city", c);
+                    	   myIntent.putExtra("final_URL", finalURL.toString());
+                    	   Log.i("TIDE ACTIVITY", "Starting Service");
+                    	   //start the service the handleMessage method wont be called yet
+                    	   startService(myIntent);
 
-                             Log.i("FINAL URL", finalURL.toString());
-                             
-                             //call to AsyncTask 
-                             LocRequest lr = new LocRequest();
+                            //call to AsyncTask 
+                            //LocRequest lr = new LocRequest();
                             // lr.execute(finalURL);
                            
                             
@@ -165,11 +161,8 @@ public class TideActivity extends Activity {
                              // This is done even if try block fails
                                  Log.i("LOG", "I have hit the finally statement");
                      }
-
                }
-            });
-                          
-                          
+            });               
     }
 	   
  		
@@ -217,7 +210,7 @@ public class TideActivity extends Activity {
     	//onPostExecute now inside the LocRequest class, it is a 
     	// required interface class for AsyncTask
     	@Override
-       	protected void onPostExecute(String result){
+       	public void onPostExecute(String result){
        		Log.i("JSON RESULTS", result);
        		
        		
@@ -249,7 +242,42 @@ public class TideActivity extends Activity {
     	}
        		
     }
-    	
+    public void updateUI() {
+		// TODO Auto-generated method stub
+		//Read data from file and parse JSON
+		JSONObject job = null;
+        JSONArray recordArray = null;
+        JSONObject field = null;
+        
+        String JSONString = DataFile.readStringFile(getBaseContext(), "tideInfo.txt", false);                           
+        String tideHeight = null;
+        String date = null;
+        String tideType = null; 
+        
+        try {          
+            job = new JSONObject(JSONString);
+            recordArray = job.getJSONObject("tide").getJSONArray("tideSummary");
+            //Log.i("recordArray",recordArray.toString());
+
+            for(int i = 0; i < recordArray.length(); i++) {
+                    //Log.i("recordArray, field",recordArray.getJSONObject(i).toString());
+                    field = recordArray.getJSONObject(i);
+
+                    tideHeight = field.getJSONObject("data").get("height").toString();
+                    date = field.getJSONObject("date").get("pretty").toString();
+                    tideType = field.getJSONObject("data").get("type").toString();
+
+                    Log.i("Parsed JSON data", "On "+date+", date the tide height will be "+tideHeight
+                                    +" for a tide type of "+tideType);
+
+                    //Update your display text here.
+                    calendar.setText("Date->"+date);
+                   
+            }
+    } catch (JSONException e) {
+            Log.e("JSON EXCEPTION", e.toString());
+    }
+    }
     
     
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -263,17 +291,5 @@ public class TideActivity extends Activity {
         view = view.findViewWithTag(R.id.class);
     }
 
-/* uncommented for now will need before turn in
- checking network connection
-	@Override
-	public void onClick(View v) {
-		// TODO Auto-generated method stub
-		//Detects the network connection
-  		_connected = WebFile.getConnectionStatus(_context);
-  		if(_connected){
-  			Log.i("NETWORK CONNECTION ", WebFile.getConnnectionType(_context));
-  		}
-	}
-*/	
-  
+
 }//end activity
