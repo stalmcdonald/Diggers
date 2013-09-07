@@ -131,7 +131,6 @@ public class TideActivity extends Activity {
                        
                        URL finalURL;                       
                        try{
-
                     	   //fixed finalURL
                     	   finalURL = new URL(tempUrl);
                     	   Log.i("FINAL URL", finalURL.toString());
@@ -249,7 +248,7 @@ public class TideActivity extends Activity {
              for(int i1 = 0; i1 < locArray.length(); i1++) {
                      field = locArray.getJSONObject(i1);
 
-                    tideInfo = field.getJSONObject("tideSite").get("tideSite").toString();
+                     tideInfo = field.get("tideSite").toString();
                     
                     //Update your display text here.
                     tidesite.setText("Location:" +tideInfo);

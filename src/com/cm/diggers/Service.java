@@ -29,9 +29,8 @@ import android.util.Log;
 public class Service extends IntentService{
 
 	public static final String MESSENGER_KEY = "messenger";
-	//public static final String TIDE_KEY = "arg1";
-	public static final String TIDAL_CITY = "arg1";
-	public static final String FINAL_URL = "obj";
+    public static final String TIDAL_CITY = "tidal_city";
+    public static final String FINAL_URL = "final_URL";
 	
 	Messenger messenger;
 	Message message;
@@ -47,7 +46,7 @@ public class Service extends IntentService{
 	@Override
 	protected void onHandleIntent(Intent intent) {
 		//Log.i("onHandleIntent", "started");
-		Log.i("TIDE SERVICE", "Service started, onHandleIntent()");
+		Log.i("SERVICE", "Service started, onHandleIntent()");
 		message = Message.obtain();
 		
 		//Moved JSON web api call and Storage here, retrieving info to handle service
