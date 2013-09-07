@@ -131,7 +131,6 @@ public class TideActivity extends Activity {
                     	   finalURL = new URL(tempUrl);
                     	   Log.i("FINAL URL", finalURL.toString());
                     	   
-                    	   // 
                     	   Messenger myMessenger = new Messenger(myHandler);
                     	   Intent myIntent = new Intent(_context, Service.class);
                     	   myIntent.putExtra("messenger", myMessenger);
@@ -164,10 +163,10 @@ public class TideActivity extends Activity {
 		return "In " + etCity + " The tide prediction: High";
 	}
 	
-	private JSONObject JSONObject(String result) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	private JSONObject JSONObject(String result) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 
 	//create method to get history from Hard drive
@@ -233,9 +232,9 @@ public class TideActivity extends Activity {
                     //Log.i("recordArray, field",recordArray.getJSONObject(i).toString());
                     field = recordArray.getJSONObject(i);
 
-                    tideHeight = field.getJSONObject("data").get("height").toString();
-                    date = field.getJSONObject("date").get("pretty").toString();
-                    tideType = field.getJSONObject("data").get("type").toString();
+                    tideHeight = field.getJSONObject("data").get("height").toString();//Swell
+                    date = field.getJSONObject("date").get("pretty").toString();//date
+                    tideType = field.getJSONObject("data").get("type").toString();//hi/lo tide
                     
                     //gives date, tide height and tide type in log cat for a 5-day forecast
                     Log.i("Parsed JSON data", "On "+date+", date the tide height will be "+tideHeight
@@ -244,13 +243,13 @@ public class TideActivity extends Activity {
              for(int i1 = 0; i1 < locArray.length(); i1++) {
                      field = locArray.getJSONObject(i1);
 
-                     tideInfo = field.get("tideSite").toString();
+                     tideInfo = field.get("tideSite").toString();//site location given
                     
                     //Displays update text here.
-                    tidesite.setText("Location:         " +tideInfo);
-                    calendar.setText("Date:             "+date);
-                    tidepre.setText("Tide Prediction:   "+tideType);
-                    waveheight.setText("Swell:          "+tideHeight);
+                    tidesite.setText("Location:              " +tideInfo);//location
+                    calendar.setText("Date:                     "+date);//date
+                    tidepre.setText("Tide Prediction:   "+tideType);//hi/lo 
+                    waveheight.setText("Swell:                    "+tideHeight);//swell
                     }     
             }
     } catch (JSONException e) {
