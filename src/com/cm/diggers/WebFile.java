@@ -1,4 +1,3 @@
-
 /*
  * 
  * Crystal McDonald
@@ -6,6 +5,7 @@
  * 1308
  * Week 2
  * 
+ * (S.Dubin)
  */
 package com.cm.diggers;
 import java.io.BufferedInputStream;
@@ -61,8 +61,10 @@ public class WebFile {
 			//run context int specific
 			//try catch statement
 			try{
+				Log.d("WEB FILE", "url="+url.toString());
 				URLConnection conn = url.openConnection();//open connection to a server
 				//accept the info url returns thru buffer input string
+				
 				BufferedInputStream bin = new BufferedInputStream(conn.getInputStream());//get data in order, get new stream and attach it to buffer
 				
 				byte[] contentBytes = new byte[1024];
@@ -79,7 +81,8 @@ public class WebFile {
 					
 				}
 								
-	    		// Verify we got a JSON String
+				Log.d("WEB FILE", "response"+response);
+	    		// Verify JSON String
 	    		JSONObject json = null;
 	        	try {
 	    			json = new JSONObject(response);
@@ -95,14 +98,13 @@ public class WebFile {
 	        		//Implement a Data Storage method
 	        		//DataFile.storeStringFile(context, "crystal_tide_data.txt", json.toString());
 	        	}
-				// end sdubin
 				
 				
 				
 				//response buffer holds all data
 				return responseBuffer.toString();
 			} catch (Exception e){
-				Log.e("WebFile, URL RESPONSE ERROR", e.toString());
+				//Log.e("WebFile, URL RESPONSE ERROR", e.toString());
 				e.printStackTrace();
 			}
 				
