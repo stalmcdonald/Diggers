@@ -213,50 +213,26 @@ public class TideActivity extends Activity {
        	public void onPostExecute(String result){
        		Log.i("JSON RESULTS", result);
        		
-       		
-       		try{
-       			//parsing through JSON Data accepts a string as a parameter
-       			JSONObject json = new JSONObject("tide");
-       				JSONObject results = json.getJSONObject("utcdate").getJSONObject("data");
-       			if(results.getString("type") != null){
-       				Toast toast = Toast.makeText(_context, "Invalid City Entered ", Toast.LENGTH_LONG);
-       				toast.show();
-//       				String type;
-//					tvCity.setText("In " + c + " The tide prediction:" + type);
-//                  tvPrediction.setText( p + " tide prediction:"+ results);
-//                  tvWater.setText(w + ": Puget Sound");
-       			}else{
-       				Toast toast = Toast.makeText(_context, "Tide Info" + results.get("pretty"), Toast.LENGTH_LONG);
-       				toast.show();
-
-       				//makes sure history is there
-       				_history.put(results.getString("string"), results.toString());
-       				//target file to write history to harddrive
-       				DataFile.storeObjectFile(_context, "tide", _history, false);
-       				DataFile.storeStringFile(_context, "tideInfo", results.toString(), true);
-       			}
-       		} 
-       		catch (JSONException e){
-       			Log.e("JSON", "JSON OBJECT EXCEPTION " + e.toString());
-       		}
-    	}
-       		
+    	} 		
     }
     public void updateUI() {
 		// TODO Auto-generated method stub
 		//Read data from file and parse JSON
 		JSONObject job = null;
-        JSONArray recordArray = null;
+        JSONArray recordArray, locArray = null;
         JSONObject field = null;
         
         String JSONString = DataFile.readStringFile(getBaseContext(), "tideInfo.txt", false);                           
         String tideHeight = null;
+        String tideInfo = null;
         String date = null;
         String tideType = null; 
         
         try {          
             job = new JSONObject(JSONString);
+            locArray = job.getJSONObject("tide").getJSONArray("tideInfo");
             recordArray = job.getJSONObject("tide").getJSONArray("tideSummary");
+            
             //Log.i("recordArray",recordArray.toString());
 
             for(int i = 0; i < recordArray.length(); i++) {
@@ -270,16 +246,24 @@ public class TideActivity extends Activity {
                     Log.i("Parsed JSON data", "On "+date+", date the tide height will be "+tideHeight
                                     +" for a tide type of "+tideType);
 
+             for(int i1 = 0; i1 < locArray.length(); i1++) {
+                     field = locArray.getJSONObject(i1);
+
+                    tideInfo = field.getJSONObject("tideSite").get("tideSite").toString();
+                    
                     //Update your display text here.
+                    tidesite.setText("Location:" +tideInfo);
                     calendar.setText("Date->"+date);
-                   
+                    tidepre.setText("Tide Prediction:"+tideType);
+                    waveheight.setText("Swell: "+tideHeight);
+                    }     
             }
     } catch (JSONException e) {
             Log.e("JSON EXCEPTION", e.toString());
     }
     }
     
-    
+       
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         return inflater.inflate(R.layout.tide, container, false);
@@ -290,6 +274,6 @@ public class TideActivity extends Activity {
         
         view = view.findViewWithTag(R.id.class);
     }
-
+    
 
 }//end activity
