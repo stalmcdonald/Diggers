@@ -8,34 +8,38 @@
  */
 package com.cm.diggers;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.cm.diggers.TideActivity;
 import com.cm.diggers.DataFile;
+
 import android.app.Activity;
 import android.app.IntentService;
 
 import android.content.Intent;
+
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+
 import android.util.Log;
 
 public class Service extends IntentService{
-
+	
+	
 	public static final String MESSENGER_KEY = "messenger";
     public static final String TIDAL_CITY = "tidal_city";
     public static final String FINAL_URL = "final_URL";
+    
+    String tidal_city;
+	String url;
 	
 	Messenger messenger;
 	Message message;
-	String tidal_city;
-	String url;
+	
 	URL finalUrl;
 
 	public Service() {
@@ -57,8 +61,6 @@ public class Service extends IntentService{
 		messenger = (Messenger)extras.get(MESSENGER_KEY);
 		tidal_city =(String) extras.getString(TIDAL_CITY);
 		url = (String) extras.getString(FINAL_URL);
-		
-		//Log.e("TIDE SERVICE", "TIDAL CITY:",tidal_city);
 		
 		
 		//Call JSON web api here
@@ -93,8 +95,8 @@ public class Service extends IntentService{
             
             message.arg1 = Activity.RESULT_OK;
             message.obj = "Data Service Complete";
+           
             //send message to activity
-            //messenger.send(message);//created a field for messenger because it caused an error
             messenger.send(message);
             Log.d("SERVICE CLASS", "onHandleIntent()");
             
