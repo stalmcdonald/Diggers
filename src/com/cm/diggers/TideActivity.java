@@ -9,14 +9,12 @@
 package com.cm.diggers;
 
 import com.cm.diggers.R;
-import com.cm.diggers.R.string;
 import com.cm.diggers.DataFile;
 import com.cm.diggers.Service;
 
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 
 import java.util.HashMap;
 import android.util.Log;
@@ -44,7 +42,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class TideActivity extends Activity { 
 	
@@ -58,8 +55,11 @@ public class TideActivity extends Activity {
 	 TextView calendar, tidepre, waveheight, tidesite;
 	 EditText etCity;
 	 Context _context;
+	 
 	 //JSONObject results, type, tide, tideInfo;
 	 HashMap<String, String> _history;
+	 
+	 //checks network connection
 	 Boolean _connected = false;//want to assume not connected
 	 private Button b;  //global button
 	 
@@ -71,7 +71,7 @@ public class TideActivity extends Activity {
 	           _history = getHistory();
 	           Log.i("HISTORY READ",_history.toString());
 
-	      		
+	      		//setting up views
 	           setContentView(R.layout.tide);
 	           b = (Button)findViewById(R.id.bPrediction);
 	           
@@ -88,19 +88,14 @@ public class TideActivity extends Activity {
 	           //set a button for onclicklistener
 	           b.setOnClickListener(new OnClickListener() {
 	       		
-	        	   //gets text entered in edit text and appends to textview along with data pulled from json
-                   @SuppressWarnings("deprecation")
-				@Override
+	        	   //gets text entered in edit text and appends to textviews along with data pulled from json
+                   @Override
                    public void onClick(View v) {
                           
-                       // getting text edited and appending it to a string
+                       // getting data and appending it to a string
                        String c = etCity.getText().toString();
                        String p = etCity.getText().toString();
                        String w = etCity.getText().toString();
-                       String cal = calendar.getText().toString();//date
-                       String ts = tidesite.getText().toString();//location
-                       String tp = tidepre.getText().toString();//high/low
-                       String wh = waveheight.getText().toString();//swell
                        StringBuilder URL = new StringBuilder(baseURL);
                           
                        // this hides the keyboard after user selects the predict button
@@ -124,31 +119,29 @@ public class TideActivity extends Activity {
 	        			   }
 	        		   };
 	        		   
-	        		   	
+	        		   //builds the url needed to pull data	
 	        		   String tempUrl = "";
+	        		   //adds base url + city entered by user +.json to complete correct url
 	        		   tempUrl = new String(baseURL + c + ".json");
 	        		    
                        
                        URL finalURL;                       
                        try{
-
-                    	   //fixed finalURL
+                    	   //final url is displayed in logcat to show the right information is being pulled
                     	   finalURL = new URL(tempUrl);
                     	   Log.i("FINAL URL", finalURL.toString());
                     	   
+                    	   // 
                     	   Messenger myMessenger = new Messenger(myHandler);
                     	   Intent myIntent = new Intent(_context, Service.class);
                     	   myIntent.putExtra("messenger", myMessenger);
                     	   myIntent.putExtra("tidal_city", c);
                     	   myIntent.putExtra("final_URL", finalURL.toString());
                     	   Log.i("TIDE ACTIVITY", "Starting Service");
+                    	   
                     	   //start the service the handleMessage method wont be called yet
                     	   startService(myIntent);
-
-                            //call to AsyncTask 
-                            //LocRequest lr = new LocRequest();
-                            // lr.execute(finalURL);
-                           
+                           tvPrediction.setText("The best time to go clam digging is when there is a low tide. ");
                             
                      } catch (MalformedURLException e){
                     
@@ -215,6 +208,7 @@ public class TideActivity extends Activity {
        		
     	} 		
     }
+    //data read from file and updated here to the UI
     public void updateUI() {
 		// TODO Auto-generated method stub
 		//Read data from file and parse JSON
@@ -234,7 +228,7 @@ public class TideActivity extends Activity {
             recordArray = job.getJSONObject("tide").getJSONArray("tideSummary");
             
             //Log.i("recordArray",recordArray.toString());
-
+            //finds the fields in the array for object tideSummary
             for(int i = 0; i < recordArray.length(); i++) {
                     //Log.i("recordArray, field",recordArray.getJSONObject(i).toString());
                     field = recordArray.getJSONObject(i);
@@ -242,20 +236,21 @@ public class TideActivity extends Activity {
                     tideHeight = field.getJSONObject("data").get("height").toString();
                     date = field.getJSONObject("date").get("pretty").toString();
                     tideType = field.getJSONObject("data").get("type").toString();
-
+                    
+                    //gives date, tide height and tide type in log cat for a 5-day forecast
                     Log.i("Parsed JSON data", "On "+date+", date the tide height will be "+tideHeight
                                     +" for a tide type of "+tideType);
 
              for(int i1 = 0; i1 < locArray.length(); i1++) {
                      field = locArray.getJSONObject(i1);
 
-                    tideInfo = field.getJSONObject("tideSite").get("tideSite").toString();
+                     tideInfo = field.get("tideSite").toString();
                     
-                    //Update your display text here.
-                    tidesite.setText("Location:" +tideInfo);
-                    calendar.setText("Date->"+date);
-                    tidepre.setText("Tide Prediction:"+tideType);
-                    waveheight.setText("Swell: "+tideHeight);
+                    //Displays update text here.
+                    tidesite.setText("Location:         " +tideInfo);
+                    calendar.setText("Date:             "+date);
+                    tidepre.setText("Tide Prediction:   "+tideType);
+                    waveheight.setText("Swell:          "+tideHeight);
                     }     
             }
     } catch (JSONException e) {
